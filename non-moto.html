@@ -1,0 +1,1226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>RAMPSECURE - Non-Motorized Equipment Daily Checks</title>
+
+  <style>
+    :root{
+      --red:#C62828;
+      --red-dark:#A31F1F;
+      --black:#0E0E0E;
+      --white:#FFFFFF;
+      --gray:#f5f5f5;
+      --light-gray:#e0e0e0;
+      --green:#4CAF50;
+      --orange:#FF9800;
+      --dark-gray:#666;
+    }
+    
+    *{box-sizing:border-box}
+    html,body{height:100%; margin:0}
+    body{
+  font-family: Arial, Helvetica, sans-serif;
+      background: var(--red);
+      color: var(--black);
+      padding: 0;
+      overflow-x: hidden;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      background: var(--white);
+      min-height: 100vh;
+      box-shadow: 0 0 20px rgba(0,0,0,0.2);
+    }
+
+    /* Header */
+    .header {
+      background: var(--red);
+      color: var(--white);
+      padding: 15px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+    }
+
+    .home-btn {
+      background: var(--white);
+      color: var(--red);
+      border: none;
+      padding: 8px 16px;
+      border-radius: 6px;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: all 0.2s ease;
+    }
+
+    .home-btn:hover {
+      background: var(--gray);
+      transform: translateY(-1px);
+    }
+
+    .user-info {
+      font-size: 14px;
+      text-align: right;
+    }
+
+    .user-info .station {
+      font-weight: 700;
+      font-size: 16px;
+    }
+
+    /* Form Content */
+    .form-content {
+      padding: 30px;
+    }
+
+    .form-header {
+      text-align: center;
+      margin-bottom: 30px;
+      padding-bottom: 20px;
+      border-bottom: 3px solid var(--red);
+    }
+
+    .form-title {
+      font-size: 32px;
+      font-weight: 900;
+      color: var(--red);
+      margin: 0 0 10px 0;
+      letter-spacing: 1px;
+    }
+
+    .form-subtitle {
+      font-size: 18px;
+      color: var(--dark-gray);
+      margin: 0;
+      font-weight: 600;
+    }
+
+    /* Form Fields */
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+      margin-bottom: 20px;
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    .form-group label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 600;
+      color: var(--black);
+      font-size: 14px;
+    }
+
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+      width: 100%;
+      padding: 12px 16px;
+      border: 2px solid var(--light-gray);
+      border-radius: 8px;
+      font-size: 16px;
+      transition: border-color 0.2s ease;
+      background: var(--white);
+    }
+
+    .form-group input:focus,
+    .form-group select:focus,
+    .form-group textarea:focus {
+      outline: none;
+      border-color: var(--red);
+    }
+
+    .form-group input[readonly] {
+      background: var(--gray);
+      color: var(--dark-gray);
+    }
+
+    /* Equipment Inspection Table */
+    .inspection-section {
+      margin: 30px 0;
+      background: var(--gray);
+      border-radius: 12px;
+      padding: 25px;
+      border: 2px solid var(--light-gray);
+    }
+
+    .section-title {
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--red);
+      margin-bottom: 20px;
+      text-align: center;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .equipment-table {
+      width: 100%;
+      border-collapse: collapse;
+      background: var(--white);
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+
+    .equipment-table th {
+      background: var(--red);
+      color: var(--white);
+      padding: 12px 8px;
+      text-align: center;
+      font-weight: 600;
+      font-size: 13px;
+      border-bottom: 2px solid var(--red-dark);
+    }
+
+    .equipment-table td {
+      padding: 12px 8px;
+      text-align: center;
+      border-bottom: 1px solid var(--light-gray);
+      vertical-align: middle;
+    }
+
+    .equipment-table td:first-child {
+      text-align: left;
+      font-weight: 600;
+      background: var(--gray);
+      min-width: 150px;
+    }
+
+    .equipment-table tr:nth-child(even) td:not(:first-child) {
+      background: rgba(245,245,245,0.5);
+    }
+
+    .equipment-table tr:hover td:not(:first-child) {
+      background: rgba(198,40,40,0.05);
+    }
+
+    /* Checkbox styling */
+    input[type="checkbox"] {
+      width: 20px;
+      height: 20px;
+      cursor: pointer;
+      transform: scale(1.2);
+      accent-color: var(--red);
+    }
+
+    /* Equipment comment styling */
+    .equipment-comment {
+      width: 100%;
+      min-height: 60px;
+      padding: 8px;
+      border: 1px solid var(--light-gray);
+      border-radius: 4px;
+      font-size: 12px;
+      resize: vertical;
+    }
+
+    .equipment-comment:focus {
+      border-color: var(--red);
+      outline: none;
+    }
+
+    .equipment-comment::placeholder {
+      color: var(--dark-gray);
+      font-style: italic;
+    }
+
+    /* Required field indicator */
+    .required-indicator {
+      color: var(--red);
+      font-size: 12px;
+      font-style: italic;
+      margin-top: 5px;
+    }
+
+    .validation-error {
+      border: 2px solid var(--red) !important;
+      background: rgba(198,40,40,0.05) !important;
+    }
+
+    .error-message {
+      color: var(--red);
+      font-size: 12px;
+      margin-top: 5px;
+      font-weight: 600;
+    }
+
+    /* Time tracking display */
+    .time-tracking {
+      background: var(--gray);
+      border-radius: 8px;
+      padding: 15px;
+      margin-bottom: 20px;
+      text-align: center;
+      border: 2px solid var(--light-gray);
+    }
+
+    .time-info {
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 15px;
+    }
+
+    .time-item {
+      text-align: center;
+    }
+
+    .time-label {
+      font-size: 12px;
+      color: var(--dark-gray);
+      margin-bottom: 5px;
+      font-weight: 600;
+    }
+
+    .time-value {
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--red);
+    }
+
+    /* Action Buttons */
+    .action-buttons {
+      display: flex;
+      gap: 15px;
+      justify-content: center;
+      margin: 40px 0 30px;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+  padding: 15px 30px;
+  border: none;
+  border-radius: 8px;
+  font-weight: 700;
+  font-size: 16px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-transform: none;
+  letter-spacing: 0.5px;
+  min-width: 140px;
+    }
+
+    .btn-submit {
+      background: var(--green);
+      color: var(--white);
+    }
+
+    .btn-submit:hover {
+      background: #45a049;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(76,175,80,0.4);
+    }
+
+    .btn-edr {
+      background: var(--orange);
+      color: var(--white);
+    }
+
+    .btn-edr:hover {
+      background: #f57c00;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(255,152,0,0.4);
+    }
+
+    .btn-draft {
+      background: var(--dark-gray);
+      color: var(--white);
+    }
+
+    .btn-draft:hover {
+      background: #555;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(102,102,102,0.4);
+    }
+
+    .btn-main {
+      background: var(--red);
+      color: var(--white);
+    }
+
+    .btn-main:hover {
+      background: var(--red-dark);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(198,40,40,0.4);
+    }
+
+    /* Footer */
+    .footer {
+      text-align: center;
+      padding: 20px;
+      color: var(--dark-gray);
+      font-size: 14px;
+      border-top: 1px solid var(--light-gray);
+      background: var(--gray);
+    }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+      .form-row {
+        grid-template-columns: 1fr;
+        gap: 15px;
+      }
+
+      .form-content {
+        padding: 20px 15px;
+      }
+
+      .form-title {
+        font-size: 24px;
+      }
+
+      .equipment-table {
+        font-size: 12px;
+      }
+
+      .equipment-table th,
+      .equipment-table td {
+        padding: 8px 4px;
+      }
+
+      .action-buttons {
+        flex-direction: column;
+        align-items: center;
+      }
+
+      .btn {
+        width: 100%;
+        max-width: 280px;
+      }
+
+      .header {
+        flex-direction: column;
+        gap: 10px;
+        text-align: center;
+      }
+
+      .time-info {
+        flex-direction: column;
+        gap: 10px;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .equipment-table th,
+      .equipment-table td {
+        padding: 6px 2px;
+        font-size: 11px;
+      }
+
+      .equipment-table td:first-child {
+        min-width: 100px;
+        font-size: 12px;
+      }
+
+      input[type="checkbox"] {
+        width: 16px;
+        height: 16px;
+      }
+
+      .equipment-comment {
+        min-height: 50px;
+        font-size: 11px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- Header -->
+    <div class="header">
+      <button class="home-btn" onclick="returnToMain()">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/>
+        </svg>
+        HOME
+      </button>
+      <div class="user-info">
+        <div id="userDisplay">Loading user...</div>
+        <div class="station" id="stationDisplay">Loading station...</div>
+      </div>
+    </div>
+
+    <!-- Form Content -->
+    <div class="form-content">
+      <!-- Form Header -->
+      <div class="form-header">
+        <h1 class="form-title">NON-MOTORIZED EQUIPMENT</h1>
+        <p class="form-subtitle">DAILY SAFETY INSPECTION REPORT</p>
+      </div>
+
+      <!-- Time Tracking Display -->
+      <div class="time-tracking">
+        <div class="time-info">
+          <div class="time-item">
+            <div class="time-label">FORM STARTED</div>
+            <div class="time-value" id="startTimeDisplay">--:--</div>
+          </div>
+          <div class="time-item">
+            <div class="time-label">CURRENT TIME</div>
+            <div class="time-value" id="currentTimeDisplay">--:--</div>
+          </div>
+          <div class="time-item">
+            <div class="time-label">DURATION</div>
+            <div class="time-value" id="durationDisplay">0 min</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Form -->
+      <form id="nonMotoForm">
+        <!-- Basic Information -->
+        <div class="form-row">
+          <div class="form-group">
+            <label for="inspectionDate">Inspection Date *</label>
+            <input type="date" id="inspectionDate" required>
+            <div class="required-indicator">* Required Field</div>
+          </div>
+          <div class="form-group">
+            <label for="inspector">Inspector Name *</label>
+            <input type="text" id="inspector" placeholder="First Initial. Last Name" required>
+            <div class="required-indicator">* Required Field</div>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="startTime">Start Time (Auto-captured) *</label>
+            <input type="time" id="startTime" required readonly>
+            <div class="required-indicator">* Automatically set when form opened</div>
+          </div>
+          <div class="form-group">
+            <label for="endTime">End Time (Auto-set on submit)</label>
+            <input type="time" id="endTime" readonly>
+            <div class="required-indicator">Will be set automatically when submitted</div>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="station">Station</label>
+            <select id="station" required></select>
+          </div>
+        </div>
+
+        <!-- Equipment Inspection Section -->
+        <div class="inspection-section">
+          <h2 class="section-title">Equipment Safety Inspection Matrix</h2>
+          <div class="required-indicator" style="text-align: center; margin-bottom: 15px;">
+            * Check applicable items OR provide comments explaining why equipment couldn't be inspected
+          </div>
+          
+          <table class="equipment-table" id="equipmentTable">
+            <thead>
+              <tr>
+                <th>Equipment</th>
+                <th>Wheels in<br>Good Condition</th>
+                <th>Brakes in<br>Good Condition</th>
+                <th>Safety Bumpers<br>Good</th>
+                <th>Unit FOD<br>Free</th>
+                <th>Unit Safe for<br>Service</th>
+                <th>Comments/Notes</th>
+              </tr>
+            </thead>
+            <tbody id="equipmentRows">
+              <!-- Equipment rows will be populated by JavaScript -->
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Comments Section -->
+        <div class="form-group">
+          <label for="comments">General Comments/Concerns Include Unit ID# *</label>
+          <textarea id="comments" rows="4" placeholder="If none, type 'NA'. Include specific unit IDs for any issues or concerns..." required></textarea>
+          <div class="required-indicator">* Required Field - Enter "NA" if no comments</div>
+        </div>
+
+        <!-- Additional Notes -->
+        <div class="form-group">
+          <label for="additionalNotes">Additional Notes & Comments</label>
+          <textarea id="additionalNotes" rows="3" placeholder="Enter any additional observations, concerns, or notes about the inspection..."></textarea>
+        </div>
+
+        <!-- Certification -->
+        <div class="form-group">
+          <label for="certification">Inspector Certification *</label>
+          <textarea id="certification" rows="2" readonly>I Certify the above Inspections are complete, the equipment is safe to operate, and all deficiencies have been reported and received. (Insert first initial and last name below)</textarea>
+          <input type="text" id="certificationName" placeholder="First Initial. Last Name" required style="margin-top: 10px;">
+          <div class="required-indicator">* Required Field</div>
+        </div>
+      </form>
+
+      <!-- Action Buttons -->
+      <div class="action-buttons">
+        <button type="button" class="btn btn-submit" onclick="submitReport()">
+          Submit Report
+        </button>
+        <button type="button" class="btn btn-edr" onclick="createEDR()">
+          Create EDR
+        </button>
+        <button type="button" class="btn btn-draft" onclick="saveDraft()">
+          Save Draft
+        </button>
+        <button type="button" class="btn btn-main" onclick="returnToMain()">
+          Back to Main
+        </button>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="footer">
+      <small>© 2025 MaintAir Aviation Services Ltd. - RAMPSECURE Equipment Safety & Maintenance Hub</small>
+    </div>
+  </div>
+
+  <script>
+    // Authentication state
+    let currentUser = null;
+    let userStation = null;
+    let isManagerAccess = false;
+
+    // Time tracking
+    let formStartTime = null;
+    let timeUpdateInterval = null;
+    
+    // Form submission state and user interaction tracking
+    let formSubmitted = false;
+    let userHasInteracted = false; // NEW: Track if user has actually interacted with the form
+
+    // Equipment data by station - easily expandable for more equipment
+    const equipmentData = {
+      'YBR': [
+        { id: 'Stairs #7433', name: 'Stairs #7433', type: 'stairs' },
+        { id: 'Stairs #7456', name: 'Stairs #7456', type: 'stairs' },
+        { id: 'LAV Cart #7361', name: 'LAV Cart #7361', type: 'cart' },
+        { id: 'Cart-Carry-On #7402', name: 'Cart-Carry-On #7402', type: 'cart' },
+        { id: 'Cart-Covered #7404', name: 'Cart-Covered #7404', type: 'cart' },
+        { id: 'Cart-Covered #7405', name: 'Cart-Covered #7405', type: 'cart' },
+        { id: 'Cart-Covered #7410', name: 'Cart-Covered #7410', type: 'cart' },
+        { id: 'Cart-Open #7368', name: 'Cart-Open #7368', type: 'cart' },
+        { id: 'Cart-Open #7369', name: 'Cart-Open #7369', type: 'cart' },
+        { id: 'Cart-Open #7370', name: 'Cart-Open #7370', type: 'cart' },
+        { id: 'Cart-Open #7371', name: 'Cart-Open #7371', type: 'cart' },
+        { id: 'Ramp #7412', name: 'Ramp #7412', type: 'ramp' },
+        { id: 'Stairs #7413', name: 'Stairs #7413', type: 'stairs' },
+        { id: 'Stairs #7414', name: 'Stairs #7414', type: 'stairs' },
+        { id: 'Stairs #7457', name: 'Stairs #7457', type: 'stairs' }
+      ],
+      'YQT': [
+        { id: 'Cart-Open #8001', name: 'Cart-Open #8001', type: 'cart' },
+        { id: 'Stairs #8002', name: 'Stairs #8002', type: 'stairs' },
+        { id: 'LAV Cart #8003', name: 'LAV Cart #8003', type: 'cart' }
+      ],
+      'YFC': [
+        { id: 'Cart-Covered #9001', name: 'Cart-Covered #9001', type: 'cart' },
+        { id: 'LAV Cart #9002', name: 'LAV Cart #9002', type: 'cart' },
+        { id: 'Ramp #9003', name: 'Ramp #9003', type: 'ramp' }
+      ],
+      'YTS': [
+        { id: 'Ramp #1001', name: 'Ramp #1001', type: 'ramp' },
+        { id: 'Stairs #1002', name: 'Stairs #1002', type: 'stairs' },
+        { id: 'Cart-Open #1003', name: 'Cart-Open #1003', type: 'cart' }
+      ],
+      'YQG': [
+        { id: 'Cart-Open #2001', name: 'Cart-Open #2001', type: 'cart' },
+        { id: 'Cart-Covered #2002', name: 'Cart-Covered #2002', type: 'cart' },
+        { id: 'Stairs #2003', name: 'Stairs #2003', type: 'stairs' }
+      ],
+      'YSJ': [
+        { id: 'Stairs #3001', name: 'Stairs #3001', type: 'stairs' },
+        { id: 'LAV Cart #3002', name: 'LAV Cart #3002', type: 'cart' },
+        { id: 'Ramp #3003', name: 'Ramp #3003', type: 'ramp' }
+      ]
+    };
+
+    // Initialize the page
+    document.addEventListener('DOMContentLoaded', function() {
+      restoreUserSession();
+      initializePage();
+      startFormTiming();
+      setupInteractionTracking(); // NEW: Setup interaction tracking
+    });
+
+    // NEW: Setup interaction tracking to know when user actually starts using the form
+    function setupInteractionTracking() {
+      // Track when user starts actually filling out the form (excluding auto-filled fields)
+      const trackableFields = ['inspectionDate', 'inspector', 'comments', 'additionalNotes', 'certificationName'];
+      
+      trackableFields.forEach(fieldId => {
+        const field = document.getElementById(fieldId);
+        if (field) {
+          // Track when user modifies these fields beyond the default values
+          field.addEventListener('input', function() {
+            // Only mark as interacted if they've actually typed something meaningful
+            if (this.value.trim() && this.value.trim() !== this.defaultValue) {
+              userHasInteracted = true;
+            }
+          });
+          
+          field.addEventListener('change', function() {
+            // For date and select fields, any change counts as interaction
+            if (this.value.trim() && this.value.trim() !== this.defaultValue) {
+              userHasInteracted = true;
+            }
+          });
+        }
+      });
+
+      // Track equipment interactions (checkboxes and comments)
+      document.addEventListener('change', function(e) {
+        if (e.target.type === 'checkbox' || e.target.classList.contains('equipment-comment')) {
+          if (e.target.type === 'checkbox' && e.target.checked) {
+            userHasInteracted = true;
+          } else if (e.target.classList.contains('equipment-comment') && e.target.value.trim()) {
+            userHasInteracted = true;
+          }
+        }
+      });
+    }
+
+    function restoreUserSession() {
+      // Get user info from URL parameters (passed from main page)
+      const urlParams = new URLSearchParams(window.location.search);
+      currentUser = urlParams.get('user') ? decodeURIComponent(urlParams.get('user')) : sessionStorage.getItem('currentUser');
+      userStation = urlParams.get('station') ? decodeURIComponent(urlParams.get('station')) : sessionStorage.getItem('userStation');
+      isManagerAccess = urlParams.get('manager') === 'true' || sessionStorage.getItem('isManagerAccess') === 'true';
+
+      // If no user info, redirect to main
+      if (!currentUser) {
+        alert('Session expired. Please sign in again.');
+        window.location.href = 'index.html';
+        return;
+      }
+
+      // Update session storage
+      sessionStorage.setItem('currentUser', currentUser);
+      sessionStorage.setItem('userStation', userStation || '');
+      sessionStorage.setItem('isManagerAccess', isManagerAccess ? 'true' : 'false');
+    }
+
+    function startFormTiming() {
+      // Capture the exact time the form was opened
+      formStartTime = new Date();
+      
+      // Set the start time in the form field
+      const startTimeStr = formStartTime.toTimeString().slice(0,5);
+      document.getElementById('startTime').value = startTimeStr;
+      document.getElementById('startTimeDisplay').textContent = startTimeStr;
+      
+      // Start updating the current time and duration
+      timeUpdateInterval = setInterval(updateTimeDisplay, 1000);
+      updateTimeDisplay(); // Initial update
+    }
+
+    function updateTimeDisplay() {
+      const now = new Date();
+      const currentTimeStr = now.toTimeString().slice(0,5);
+      document.getElementById('currentTimeDisplay').textContent = currentTimeStr;
+      
+      if (formStartTime) {
+        const durationMs = now.getTime() - formStartTime.getTime();
+        const durationMinutes = Math.floor(durationMs / (1000 * 60));
+        const durationSeconds = Math.floor((durationMs % (1000 * 60)) / 1000);
+        document.getElementById('durationDisplay').textContent = `${durationMinutes}m ${durationSeconds}s`;
+      }
+    }
+
+    function initializePage() {
+      // Update user display
+      const displayName = currentUser.split('@')[0];
+      document.getElementById('userDisplay').textContent = `Signed in as: ${displayName}`;
+      
+      const stationSelect = document.getElementById('station');
+      const stations = Object.keys(equipmentData);
+      stationSelect.innerHTML = '';
+      if (isManagerAccess) {
+        document.getElementById('stationDisplay').textContent = 'Manager Access - Select Station';
+        stations.forEach(st => {
+          const opt = document.createElement('option');
+          opt.value = st;
+          opt.textContent = st;
+          stationSelect.appendChild(opt);
+        });
+        stationSelect.value = userStation || stations[0];
+      } else {
+        document.getElementById('stationDisplay').textContent = `Station: ${userStation}`;
+        const opt = document.createElement('option');
+        opt.value = userStation;
+        opt.textContent = userStation;
+        stationSelect.appendChild(opt);
+        stationSelect.value = userStation;
+        stationSelect.disabled = true;
+      }
+
+      // Set default date to today
+      const today = new Date().toISOString().split('T')[0];
+      document.getElementById('inspectionDate').value = today;
+      document.getElementById('inspectionDate').defaultValue = today; // Set default value for comparison
+
+      // Auto-fill inspector name from user email
+      document.getElementById('inspector').value = displayName;
+      document.getElementById('inspector').defaultValue = displayName; // Set default value for comparison
+      document.getElementById('certificationName').value = displayName;
+      document.getElementById('certificationName').defaultValue = displayName; // Set default value for comparison
+
+      // Load equipment based on access level
+      loadEquipment();
+    }
+
+    function loadEquipment() {
+      const tableBody = document.getElementById('equipmentRows');
+      let equipment = [];
+
+      if (isManagerAccess) {
+        // Manager sees all equipment from all stations
+        Object.values(equipmentData).forEach(stationEquipment => {
+          equipment = equipment.concat(stationEquipment);
+        });
+      } else {
+        // Station user sees only their station's equipment
+        equipment = equipmentData[userStation] || [];
+      }
+
+      // Clear existing rows
+      tableBody.innerHTML = '';
+
+      // Create equipment rows
+      equipment.forEach(item => {
+        const row = document.createElement('tr');
+        row.innerHTML = `
+          <td>${item.name}</td>
+          <td><input type="checkbox" name="wheels_${item.id}" id="wheels_${item.id}"></td>
+          <td><input type="checkbox" name="brakes_${item.id}" id="brakes_${item.id}"></td>
+          <td><input type="checkbox" name="bumpers_${item.id}" id="bumpers_${item.id}"></td>
+          <td><input type="checkbox" name="fod_${item.id}" id="fod_${item.id}"></td>
+          <td><input type="checkbox" name="safe_${item.id}" id="safe_${item.id}"></td>
+          <td><textarea class="equipment-comment" name="comment_${item.id}" id="comment_${item.id}" placeholder="Explain if equipment not inspected, any issues found, or notes..."></textarea></td>
+        `;
+        tableBody.appendChild(row);
+      });
+
+      if (equipment.length === 0) {
+        const row = document.createElement('tr');
+        row.innerHTML = '<td colspan="7" style="text-align: center; font-style: italic; color: #666;">No equipment configured for this station</td>';
+        tableBody.appendChild(row);
+      }
+    }
+
+    function validateForm() {
+      let isValid = true;
+      const errors = [];
+
+      // Required field validation
+      const requiredFields = ['inspectionDate', 'inspector', 'startTime', 'comments', 'certificationName'];
+      requiredFields.forEach(fieldId => {
+        const field = document.getElementById(fieldId);
+        if (!field.value.trim()) {
+          field.classList.add('validation-error');
+          isValid = false;
+          errors.push(`${field.previousElementSibling.textContent.replace(' *', '')} is required`);
+        } else {
+          field.classList.remove('validation-error');
+        }
+      });
+
+      // Equipment validation - more flexible now
+      const equipmentRows = document.querySelectorAll('#equipmentRows tr');
+      let equipmentValidationErrors = [];
+
+      equipmentRows.forEach((row, index) => {
+        const checkboxes = row.querySelectorAll('input[type="checkbox"]');
+        const commentField = row.querySelector('textarea');
+        
+        if (checkboxes.length > 0) {
+          const hasChecked = Array.from(checkboxes).some(cb => cb.checked);
+          const hasComment = commentField && commentField.value.trim();
+          
+          // Equipment row is valid if it has at least one checkbox checked OR has a comment explaining why
+          if (!hasChecked && !hasComment) {
+            equipmentValidationErrors.push(`${row.querySelector('td').textContent}: Either check inspection items or provide comment explaining why not inspected`);
+            checkboxes.forEach(cb => cb.classList.add('validation-error'));
+            if (commentField) commentField.classList.add('validation-error');
+          } else {
+            checkboxes.forEach(cb => cb.classList.remove('validation-error'));
+            if (commentField) commentField.classList.remove('validation-error');
+          }
+        }
+      });
+
+      if (equipmentValidationErrors.length > 0) {
+        errors.push('Equipment Inspection Issues:\n  • ' + equipmentValidationErrors.join('\n  • '));
+        isValid = false;
+      }
+
+      if (!isValid) {
+        alert('Please correct the following errors:\n\n• ' + errors.join('\n• '));
+      }
+
+      return isValid;
+    }
+
+    function collectFormData() {
+      const formData = {
+        inspectionDate: document.getElementById('inspectionDate').value,
+        inspector: document.getElementById('inspector').value,
+        startTime: document.getElementById('startTime').value,
+        endTime: document.getElementById('endTime').value,
+        station: document.getElementById('station').value,
+        comments: document.getElementById('comments').value,
+        additionalNotes: document.getElementById('additionalNotes').value,
+        certificationName: document.getElementById('certificationName').value,
+        submittedBy: currentUser,
+        submissionTime: new Date().toISOString(),
+        formDuration: formStartTime ? Math.floor((new Date().getTime() - formStartTime.getTime()) / (1000 * 60)) : 0,
+        equipmentInspections: {}
+      };
+
+      // Collect equipment inspection data
+      const equipmentRows = document.querySelectorAll('#equipmentRows tr');
+      equipmentRows.forEach(row => {
+        const equipmentName = row.querySelector('td')?.textContent;
+        const checkboxes = row.querySelectorAll('input[type="checkbox"]');
+        const commentField = row.querySelector('textarea');
+        
+        if (checkboxes.length > 0 && equipmentName) {
+          formData.equipmentInspections[equipmentName] = {
+            wheels: checkboxes[0]?.checked || false,
+            brakes: checkboxes[1]?.checked || false,
+            bumpers: checkboxes[2]?.checked || false,
+            fod: checkboxes[3]?.checked || false,
+            safe: checkboxes[4]?.checked || false,
+            comment: commentField?.value.trim() || ''
+          };
+        }
+      });
+
+      return formData;
+    }
+
+    function sendEmailNotification(formData) {
+      // Determine email recipients based on station
+      let recipients = [
+        'sean.davies@maintair.com',
+        'john.marshall@maintair.com', 
+        'john.currie@maintair.com',
+        'eric.cline@maintair.com'
+      ];
+      
+      // Add additional recipients for YBR station
+      if (formData.station === 'YBR') {
+        recipients.push(
+          'joseph.hunter@maintair.com',
+          'sergio.martinez@maintair.com',
+          'emmanuel.afolabi@maintair.com'
+        );
+      }
+      
+      const subject = `NON-MOTORIZED DSI Report - ${formData.station} - ${formData.inspectionDate}`;
+      
+      // Create detailed email body with YES/NO format for easier reading
+      let equipmentSummary = '';
+      Object.entries(formData.equipmentInspections).forEach(([equipment, data]) => {
+        equipmentSummary += `\n${equipment}:\n`;
+        equipmentSummary += `  • Wheels Good: ${data.wheels ? 'YES' : 'NO'}\n`;
+        equipmentSummary += `  • Brakes Good: ${data.brakes ? 'YES' : 'NO'}\n`;
+        equipmentSummary += `  • Bumpers Good: ${data.bumpers ? 'YES' : 'NO'}\n`;
+        equipmentSummary += `  • FOD Free: ${data.fod ? 'YES' : 'NO'}\n`;
+        equipmentSummary += `  • Safe for Service: ${data.safe ? 'YES' : 'NO'}\n`;
+        if (data.comment) {
+          equipmentSummary += `  • Comments: ${data.comment}\n`;
+        }
+        equipmentSummary += `\n`;
+      });
+      
+      const body = `NON-MOTORIZED EQUIPMENT DAILY SAFETY INSPECTION REPORT
+      
+Report ID: NM-${Date.now()}
+Date: ${formData.inspectionDate}
+Start Time: ${formData.startTime}
+End Time: ${formData.endTime}
+Duration: ${formData.formDuration} minutes
+Inspector: ${formData.inspector}
+Station: ${formData.station}
+Equipment Items: ${Object.keys(formData.equipmentInspections).length}
+
+EQUIPMENT INSPECTION RESULTS:${equipmentSummary}
+
+GENERAL COMMENTS: ${formData.comments}
+
+ADDITIONAL NOTES: ${formData.additionalNotes || 'None'}
+
+CERTIFICATION: ${formData.certificationName}
+
+Submitted by: ${formData.submittedBy}
+Submission Time: ${new Date(formData.submissionTime).toLocaleString()}`;
+      
+      // Simulate sending (replace with actual email API in production)
+      console.log('Sending email to:', recipients.join(', '));
+      console.log('Subject:', subject);
+      console.log('Body:', body);
+      
+      // In production, you would make an API call here like:
+      // fetch('/api/send-email', { method: 'POST', body: JSON.stringify({ recipients, subject, body }) })
+    }
+
+    function submitReport() {
+      if (!validateForm()) return;
+
+      // Set end time to now when submitting
+      const now = new Date();
+      const endTimeStr = now.toTimeString().slice(0,5);
+      document.getElementById('endTime').value = endTimeStr;
+
+      const formData = collectFormData();
+      const reportId = 'NM-' + Date.now();
+
+      // Create summary for confirmation
+      const equipmentCount = Object.keys(formData.equipmentInspections).length;
+      const inspectedCount = Object.values(formData.equipmentInspections).filter(item => 
+        item.wheels || item.brakes || item.bumpers || item.fod || item.safe
+      ).length;
+      const commentCount = Object.values(formData.equipmentInspections).filter(item => 
+        item.comment && item.comment.trim()
+      ).length;
+
+      // Simulate submission
+      const submissionConfirm = confirm(
+        `📋 NON-MOTORIZED EQUIPMENT DAILY INSPECTION REPORT\n\n` +
+        `Report ID: ${reportId}\n` +
+        `Date: ${formData.inspectionDate}\n` +
+        `Inspector: ${formData.inspector}\n` +
+        `Start Time: ${formData.startTime}\n` +
+        `End Time: ${formData.endTime}\n` +
+        `Duration: ${formData.formDuration} minutes\n` +
+        `Station: ${formData.station}\n` +
+        `Equipment Items: ${equipmentCount}\n` +
+        `Items Inspected: ${inspectedCount}\n` +
+        `Items with Comments: ${commentCount}\n\n` +
+        `Submit this report?`
+      );
+
+      if (submissionConfirm) {
+        // Stop time tracking
+        if (timeUpdateInterval) {
+          clearInterval(timeUpdateInterval);
+        }
+
+        // Send report to management emails
+        sendEmailNotification(formData);
+        
+        // Mark form as submitted to prevent draft warning
+        formSubmitted = true;
+        userHasInteracted = false; // Reset interaction tracking
+        
+        // Show success notification
+        alert(
+          `✅ REPORT SUBMITTED SUCCESSFULLY\n\n` +
+          `Report ID: ${reportId}\n` +
+          `Status: Submitted\n` +
+          `Time: ${new Date().toLocaleString()}\n` +
+          `End Time: ${formData.endTime}\n` +
+          `Total Duration: ${formData.formDuration} minutes\n` +
+          `Emails sent to: ${formData.station === 'YBR' ? '7 recipients' : '4 recipients'}\n\n` +
+          `Equipment Summary:\n` +
+          `• Total Items: ${equipmentCount}\n` +
+          `• Items Inspected: ${inspectedCount}\n` +
+          `• Items with Comments: ${commentCount}\n\n` +
+          `A copy has been logged to the maintenance system.`
+        );
+
+        // Reset form and restart timing
+        document.getElementById('nonMotoForm').reset();
+        formSubmitted = false; // Reset submission state for new form
+        userHasInteracted = false; // Reset interaction tracking for new form
+        initializePage();
+        startFormTiming();
+      }
+    }
+
+    function createEDR() {
+      // Redirect to EDR page with current user info
+      const edrUrl = `edr.html?user=${encodeURIComponent(currentUser)}&station=${encodeURIComponent(userStation || '')}&manager=${isManagerAccess}&source=nonmoto`;
+      window.location.href = edrUrl;
+    }
+
+    function saveDraft() {
+      const formData = collectFormData();
+      const completionPercent = calculateFormCompletion();
+      const draftId = 'DRAFT-NM-' + Date.now();
+      
+      // Store draft in sessionStorage for recovery
+      sessionStorage.setItem(`draft_${draftId}`, JSON.stringify(formData));
+      
+      alert(
+        `💾 DRAFT SAVED\n\n` +
+        `Draft ID: ${draftId}\n` +
+        `Date: ${formData.inspectionDate || 'Not set'}\n` +
+        `Inspector: ${formData.inspector || 'Not set'}\n` +
+        `Station: ${formData.station}\n` +
+        `Duration: ${formData.formDuration} minutes\n` +
+        `Completion: ${completionPercent}%\n` +
+        `Equipment Progress: ${Object.values(formData.equipmentInspections).filter(item => 
+          item.wheels || item.brakes || item.bumpers || item.fod || item.safe || item.comment
+        ).length}/${Object.keys(formData.equipmentInspections).length}\n` +
+        `Saved: ${new Date().toLocaleString()}\n\n` +
+        `Your progress has been saved locally.`
+      );
+    }
+
+    // FIXED: Better logic for determining if form has meaningful content
+    function hasUserMadeChanges() {
+      // Only check if user has actually interacted with the form beyond auto-filled fields
+      if (!userHasInteracted) {
+        return false;
+      }
+
+      // Check if any non-auto-filled fields have been modified
+      const inspector = document.getElementById('inspector').value.trim();
+      const inspectorDefault = document.getElementById('inspector').defaultValue;
+      const inspectionDate = document.getElementById('inspectionDate').value;
+      const inspectionDateDefault = document.getElementById('inspectionDate').defaultValue;
+      const comments = document.getElementById('comments').value.trim();
+      const additionalNotes = document.getElementById('additionalNotes').value.trim();
+      const certificationName = document.getElementById('certificationName').value.trim();
+      const certificationDefault = document.getElementById('certificationName').defaultValue;
+
+      // Check if user has modified fields beyond their defaults
+      const hasModifiedInspector = inspector && inspector !== inspectorDefault;
+      const hasModifiedDate = inspectionDate && inspectionDate !== inspectionDateDefault;
+      const hasComments = comments && comments.toLowerCase() !== 'na';
+      const hasAdditionalNotes = additionalNotes.length > 0;
+      const hasModifiedCertification = certificationName && certificationName !== certificationDefault;
+
+      // Check equipment interactions
+      const equipmentRows = document.querySelectorAll('#equipmentRows tr');
+      let hasEquipmentChanges = false;
+
+      equipmentRows.forEach(row => {
+        const checkboxes = row.querySelectorAll('input[type="checkbox"]');
+        const commentField = row.querySelector('textarea');
+        
+        const hasChecked = Array.from(checkboxes).some(cb => cb.checked);
+        const hasComment = commentField && commentField.value.trim();
+        
+        if (hasChecked || hasComment) {
+          hasEquipmentChanges = true;
+        }
+      });
+
+      return hasModifiedInspector || hasModifiedDate || hasComments || hasAdditionalNotes || hasModifiedCertification || hasEquipmentChanges;
+    }
+
+    function calculateFormCompletion() {
+      const totalFields = 5; // Required fields: inspectionDate, inspector, startTime, comments, certificationName
+      let completedFields = 0;
+      
+      const requiredFields = ['inspectionDate', 'inspector', 'startTime', 'comments', 'certificationName'];
+      requiredFields.forEach(fieldId => {
+        if (document.getElementById(fieldId).value.trim()) {
+          completedFields++;
+        }
+      });
+
+      const equipmentRows = document.querySelectorAll('#equipmentRows tr');
+      let totalEquipment = 0;
+      let completedEquipment = 0;
+
+      equipmentRows.forEach(row => {
+        const checkboxes = row.querySelectorAll('input[type="checkbox"]');
+        const commentField = row.querySelector('textarea');
+        
+        if (checkboxes.length > 0) {
+          totalEquipment++;
+          const hasChecked = Array.from(checkboxes).some(cb => cb.checked);
+          const hasComment = commentField && commentField.value.trim();
+          
+          if (hasChecked || hasComment) {
+            completedEquipment++;
+          }
+        }
+      });
+
+      const fieldCompletion = (completedFields / totalFields) * 50;
+      const equipmentCompletion = totalEquipment > 0 ? (completedEquipment / totalEquipment) * 50 : 50;
+      
+      return Math.round(fieldCompletion + equipmentCompletion);
+    }
+
+    function returnToMain() {
+      // FIXED: Use better logic to determine if user has unsaved changes
+      const hasUnsavedChanges = !formSubmitted && hasUserMadeChanges();
+      
+      if (hasUnsavedChanges) {
+        const confirmReturn = confirm('You have unsaved changes. Would you like to save a draft before returning to the main menu?');
+        if (confirmReturn) {
+          const saveFirst = confirm('Save draft first?');
+          if (saveFirst) {
+            saveDraft();
+          }
+        }
+      }
+      
+      if (timeUpdateInterval) {
+        clearInterval(timeUpdateInterval);
+      }
+      
+      window.location.href = `index.html?return=true&user=${encodeURIComponent(currentUser)}&station=${encodeURIComponent(userStation || '')}`;
+    }
+
+    // Auto-save functionality
+    let autoSaveInterval;
+    function startAutoSave() {
+      autoSaveInterval = setInterval(() => {
+        // Only auto-save if user has actually interacted with the form
+        if (userHasInteracted && hasUserMadeChanges()) {
+          const formData = collectFormData();
+          const autoSaveId = `autosave_nonmoto_${currentUser}_${new Date().toISOString().split('T')[0]}`;
+          sessionStorage.setItem(autoSaveId, JSON.stringify({
+            data: formData,
+            timestamp: new Date().toISOString(),
+            completion: calculateFormCompletion()
+          }));
+          console.log(`Auto-saved form data`);
+        }
+      }, 120000); // Every 2 minutes
+    }
+
+    // Cleanup
+    window.addEventListener('beforeunload', function(e) {
+      if (timeUpdateInterval) {
+        clearInterval(timeUpdateInterval);
+      }
+      if (autoSaveInterval) {
+        clearInterval(autoSaveInterval);
+      }
+      
+      // FIXED: Only show warning if user has made actual changes and form wasn't submitted
+      if (hasUserMadeChanges() && !formSubmitted) {
+        e.preventDefault();
+        e.returnValue = 'You have unsaved changes. Are you sure you want to leave?';
+        return e.returnValue;
+      }
+    });
+
+    // Start auto-save
+    document.addEventListener('DOMContentLoaded', function() {
+      startAutoSave();
+    });
+  </script>
+</body>
+</html>

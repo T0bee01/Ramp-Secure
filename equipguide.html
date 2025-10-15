@@ -1,0 +1,985 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Equipment Guidelines - RAMPSECURE</title>
+
+  <style>
+    :root{
+      --red:#C62828;
+      --red-dark:#A31F1F;
+      --black:#0E0E0E;
+      --white:#FFFFFF;
+      --gray:#f5f5f5;
+      --light-gray:#e8e8e8;
+    }
+    
+    *{box-sizing:border-box}
+    html,body{height:100%; margin:0; padding:0}
+    body{
+      font-family: Arial, Helvetica, sans-serif;
+      background:var(--red);
+      color:var(--black);
+      line-height:1.4;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 20px;
+      min-height: 100vh;
+    }
+
+    /* Header */
+    .header {
+      background: linear-gradient(180deg, rgba(255,255,255,0.95) 0%, rgba(255,255,255,0.85) 100%);
+      border-radius: 16px;
+      padding: 20px;
+      margin-bottom: 30px;
+      box-shadow: 0 6px 14px rgba(0,0,0,.25);
+      backdrop-filter: blur(8px);
+      position: relative;
+    }
+
+    .header h1 {
+      text-align: center;
+      margin: 0 0 10px 0;
+      font-size: clamp(28px, 5vw, 48px);
+      font-weight: 900;
+      letter-spacing: 1px;
+    }
+
+    .header p {
+      text-align: center;
+      margin: 0;
+      font-size: clamp(14px, 2.5vw, 18px);
+      font-weight: 600;
+      opacity: 0.8;
+    }
+
+    .home-btn {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      background: var(--black);
+      color: var(--white);
+      border: none;
+      border-radius: 8px;
+      padding: 10px 16px;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 14px;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .home-btn:hover {
+      background: var(--red);
+      transform: translateY(-1px);
+    }
+
+    /* Station Selection */
+    .station-selector {
+      background: var(--white);
+      border-radius: 12px;
+      padding: 25px;
+      margin-bottom: 30px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    }
+
+    .station-selector h2 {
+      margin: 0 0 15px 0;
+      font-size: 20px;
+      font-weight: 700;
+    }
+
+    .station-dropdown {
+      width: 100%;
+      padding: 12px 16px;
+      border: 2px solid var(--light-gray);
+      border-radius: 8px;
+      font-size: 16px;
+      background: var(--white);
+      cursor: pointer;
+      transition: border-color 0.2s ease;
+    }
+
+    .station-dropdown:focus {
+      outline: none;
+      border-color: var(--red);
+    }
+
+    /* Equipment Guidelines */
+    .guidelines-container {
+      background: var(--white);
+      border-radius: 12px;
+      padding: 25px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+      margin-bottom: 30px;
+    }
+
+    .guidelines-title {
+      font-size: 24px;
+      font-weight: 700;
+      margin: 0 0 20px 0;
+      color: var(--red);
+    }
+
+    .equipment-item {
+      border: 2px solid var(--light-gray);
+      border-radius: 8px;
+      margin-bottom: 15px;
+      overflow: hidden;
+      transition: all 0.3s ease;
+    }
+
+    .equipment-item:hover {
+      border-color: var(--red);
+      box-shadow: 0 2px 8px rgba(198,40,40,0.15);
+    }
+
+    .equipment-header {
+      background: var(--gray);
+      padding: 15px 20px;
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-weight: 600;
+      font-size: 16px;
+      transition: background-color 0.2s ease;
+    }
+
+    .equipment-header:hover {
+      background: #eeeeee;
+    }
+
+    .equipment-header.active {
+      background: var(--red);
+      color: var(--white);
+    }
+
+    .expand-icon {
+      transition: transform 0.3s ease;
+      font-size: 20px;
+      font-weight: bold;
+    }
+
+    .equipment-header.active .expand-icon {
+      transform: rotate(180deg);
+    }
+
+    .equipment-content {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.3s ease, padding 0.3s ease;
+      background: var(--white);
+    }
+
+    .equipment-content.active {
+      max-height: 2000px;
+      padding: 20px;
+    }
+
+    .equipment-details h4 {
+      color: var(--red);
+      margin: 0 0 10px 0;
+      font-size: 16px;
+      font-weight: 700;
+    }
+
+    .equipment-details ul {
+      margin: 0 0 15px 0;
+      padding-left: 20px;
+    }
+
+    .equipment-details li {
+      margin-bottom: 5px;
+    }
+
+    .warning {
+      background: #fff3cd;
+      border: 1px solid #ffeaa7;
+      border-radius: 6px;
+      padding: 10px 15px;
+      margin: 15px 0;
+      font-size: 14px;
+    }
+
+    .critical {
+      background: #f8d7da;
+      border: 1px solid #f5c6cb;
+      color: #721c24;
+    }
+
+    /* Back to Top Button */
+    .back-to-top {
+      position: fixed;
+      bottom: 30px;
+      right: 30px;
+      background: var(--black);
+      color: var(--white);
+      border: none;
+      border-radius: 50%;
+      width: 50px;
+      height: 50px;
+      cursor: pointer;
+      font-size: 18px;
+      transition: all 0.3s ease;
+      opacity: 0;
+      visibility: hidden;
+      z-index: 1000;
+    }
+
+    .back-to-top.visible {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    .back-to-top:hover {
+      background: var(--red);
+      transform: translateY(-2px);
+    }
+
+    .no-guidelines {
+      text-align: center;
+      color: #666;
+      font-style: italic;
+      padding: 40px 20px;
+    }
+
+    @media (max-width: 768px) {
+      .container {
+        padding: 15px;
+      }
+      
+      .home-btn {
+        position: relative;
+        top: 0;
+        right: 0;
+        margin: 10px auto 0;
+        display: block;
+        width: fit-content;
+      }
+      
+      .equipment-content.active {
+        padding: 15px;
+      }
+      
+      .back-to-top {
+        bottom: 20px;
+        right: 20px;
+        width: 45px;
+        height: 45px;
+        font-size: 16px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- Header -->
+    <div class="header">
+      <button class="home-btn" onclick="returnToHome()">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/>
+        </svg>
+        HOME
+      </button>
+      <h1>EQUIPMENT GUIDELINES</h1>
+      <p>Comprehensive Equipment Operation & Maintenance Guide</p>
+    </div>
+
+    <!-- Station Selector -->
+    <div class="station-selector">
+      <h2>Select Station</h2>
+      <select class="station-dropdown" id="stationSelect" onchange="loadGuidelines()">
+        <option value="">-- Select a Station --</option>
+        <option value="YQT">YQT - Thunder Bay Airport</option>
+        <option value="YBR">YBR - Brandon Municipal Airport</option>
+        <option value="YFC">YFC - Fredericton Airport</option>
+        <option value="YTS">YTS - Timmins Victor M. Power Airport</option>
+        <option value="YQG">YQG - Windsor Airport</option>
+        <option value="YSJ">YSJ - Saint John Airport</option>
+        <option value="GENERAL">GENERAL - Universal Guidelines</option>
+      </select>
+    </div>
+
+    <!-- Guidelines Container -->
+    <div id="guidelinesContainer" class="guidelines-container" style="display: none;">
+      <h2 class="guidelines-title" id="guidelinesTitle">Equipment Guidelines</h2>
+      <div id="equipmentList"></div>
+    </div>
+
+    <!-- No Guidelines Message -->
+    <div id="noGuidelines" class="guidelines-container no-guidelines" style="display: none;">
+      <p>Please select a station to view equipment guidelines.</p>
+    </div>
+
+    <!-- Back to Top Button -->
+    <button class="back-to-top" id="backToTop" onclick="scrollToTop()">↑</button>
+  </div>
+
+  <script>
+    // Equipment guidelines data
+    const equipmentData = {
+      'YQT': {
+        'KUBOTA 7499': {
+          type: 'Utility Vehicle',
+          operation: [
+            'Perform pre-operation inspection of brakes, lights, and steering',
+            'Check fluid levels (oil, coolant, hydraulic fluid)',
+            'Ensure seat belts are functional and properly secured',
+            'Test horn and reverse beeper functionality',
+            'Verify tire pressure and tread condition'
+          ],
+          maintenance: [
+            'Daily: Check engine oil level, coolant level, and tire condition',
+            'Weekly: Inspect battery connections and clean if necessary',
+            'Monthly: Change engine oil and filter as per manufacturer schedule',
+            'Quarterly: Inspect brake system and hydraulic lines',
+            'Annually: Complete comprehensive safety inspection'
+          ],
+          safety: [
+            'Always wear seat belt when operating',
+            'Ensure load is properly secured before transport',
+            'Maintain safe following distance',
+            'Use proper lifting techniques when loading/unloading'
+          ]
+        },
+        'THERM HEATER': {
+          type: 'Ground Power Unit',
+          operation: [
+            'Check power connections and electrical safety',
+            'Verify proper ventilation around unit',
+            'Test temperature controls and safety shutoffs',
+            'Ensure fuel supply is adequate and clean',
+            'Monitor operating temperature and pressure gauges'
+          ],
+          maintenance: [
+            'Daily: Check fuel level, inspect for leaks',
+            'Weekly: Clean air filters, check electrical connections',
+            'Monthly: Test safety systems and emergency shutoffs',
+            'Seasonal: Complete combustion system inspection',
+            'Annual: Professional calibration and safety certification'
+          ],
+          safety: [
+            'Maintain minimum clearance from aircraft and personnel',
+            'Never operate in enclosed spaces without ventilation',
+            'Keep fire extinguisher readily available',
+            'Shut down immediately if unusual odors or sounds occur'
+          ]
+        },
+        'BELT LOADER 7372': {
+          type: 'Cargo Handling Equipment',
+          operation: [
+            'Inspect conveyor belt for damage or foreign objects',
+            'Test emergency stop functions and safety systems',
+            'Verify proper positioning relative to aircraft cargo door',
+            'Check hydraulic system pressure and fluid levels',
+            'Ensure proper communication with ground crew'
+          ],
+          maintenance: [
+            'Daily: Lubricate moving parts, check belt tension',
+            'Weekly: Inspect hydraulic lines and connections',
+            'Monthly: Clean and adjust conveyor system',
+            'Quarterly: Replace worn belts and rollers',
+            'Semi-annually: Complete hydraulic system service'
+          ],
+          safety: [
+            'Never operate without proper safety barriers',
+            'Ensure personnel clear of moving parts before operation',
+            'Use proper fall protection when working at height',
+            'Maintain safe distance from aircraft surfaces'
+          ]
+        }
+      },
+      'YBR': {
+        'KUBOTA 7499/7500': {
+          type: 'Utility Vehicle',
+          operation: [
+            'Perform pre-operation inspection of brakes, lights, and steering',
+            'Check fluid levels (oil, coolant, hydraulic fluid)',
+            'Complete pre-flight inspection checklist',
+            'Test all lights and warning systems',
+            'Verify tire pressure and tread condition',
+            'Ensure seat belts are functional and properly secured',
+            'Test horn and reverse beeper functionality',
+            'Ensure emergency brake engages properly'
+          ],
+          maintenance: [
+            'Daily: Check engine oil level, coolant level, and tire condition',
+            'Daily: Oil level check, visual inspection of components',
+            'Weekly: Inspect battery connections and clean if necessary',
+            'Weekly: Battery maintenance, belt tension check',
+            'Monthly: Change engine oil and filter as per manufacturer schedule',
+            'Monthly: Filter replacements, fluid changes',
+            'Quarterly: Inspect brake system and hydraulic lines',
+            'Service hydraulic systems regularly',
+            'Annually: Complete comprehensive safety inspection',
+            'Keep maintenance log updated'
+          ],
+          safety: [
+            'Always wear seat belt when operating',
+            'Ensure load is properly secured before transport',
+            'Maintain safe following distance',
+            'Use proper lifting techniques when loading/unloading',
+            'Never exceed weight capacity limits',
+            'Use appropriate personal protective equipment',
+            'Follow lockout/tagout procedures during maintenance',
+            'Report any unusual noises or vibrations immediately'
+          ]
+        },
+        'THERM HEATER': {
+          type: 'Ground Power Unit',
+          operation: [
+            'Check power connections and electrical safety',
+            'Verify proper ventilation around unit',
+            'Test temperature controls and safety shutoffs',
+            'Ensure fuel supply is adequate and clean',
+            'Monitor operating temperature and pressure gauges'
+          ],
+          maintenance: [
+            'Daily: Check fuel level, inspect for leaks',
+            'Weekly: Clean air filters, check electrical connections',
+            'Monthly: Test safety systems and emergency shutoffs',
+            'Seasonal: Complete combustion system inspection',
+            'Annual: Professional calibration and safety certification'
+          ],
+          safety: [
+            'Maintain minimum clearance from aircraft and personnel',
+            'Never operate in enclosed spaces without ventilation',
+            'Keep fire extinguisher readily available',
+            'Shut down immediately if unusual odors or sounds occur'
+          ]
+        },
+        'RECTIFIER 7503': {
+          type: 'Ground Power Unit',
+          operation: [
+            'Verify input power specifications match aircraft requirements',
+            'Check all cable connections for security and condition',
+            'Test voltage output before connecting to aircraft',
+            'Monitor current draw during operation',
+            'Ensure proper grounding of all connections'
+          ],
+          maintenance: [
+            'Daily: Visual inspection of cables and connections',
+            'Weekly: Check cooling system and clean air vents',
+            'Monthly: Test voltage regulation and safety circuits',
+            'Quarterly: Inspect and test all protective devices',
+            'Semi-annually: Professional electrical system inspection'
+          ],
+          safety: [
+            'Always verify aircraft power requirements before connection',
+            'Use lockout/tagout procedures during maintenance',
+            'Ensure proper personal protective equipment',
+            'Never operate with damaged cables or connections'
+          ]
+        },
+        'HOBART 7507': {
+          type: 'Ground Power Unit',
+          operation: [
+            'Check input voltage and frequency settings',
+            'Inspect all power cables for damage or wear',
+            'Verify proper operation of cooling systems',
+            'Test emergency shutdown procedures',
+            'Monitor load distribution and power quality'
+          ],
+          maintenance: [
+            'Daily: Check fluid levels and inspect for leaks',
+            'Weekly: Clean cooling system components',
+            'Monthly: Test all safety and protection systems',
+            'Quarterly: Inspect electrical connections and components',
+            'Annually: Complete comprehensive electrical safety inspection'
+          ],
+          safety: [
+            'Ensure proper electrical isolation during maintenance',
+            'Maintain safe working distances from energized equipment',
+            'Use appropriate arc flash protection',
+            'Follow manufacturer lockout/tagout procedures'
+          ]
+        },
+        'BELT LOADER 7372': {
+          type: 'Cargo Handling Equipment',
+          operation: [
+            'Inspect conveyor belt for damage or foreign objects',
+            'Test emergency stop functions and safety systems',
+            'Verify proper positioning relative to aircraft cargo door',
+            'Check hydraulic system pressure and fluid levels',
+            'Ensure proper communication with ground crew'
+          ],
+          maintenance: [
+            'Daily: Lubricate moving parts, check belt tension',
+            'Weekly: Inspect hydraulic lines and connections',
+            'Monthly: Clean and adjust conveyor system',
+            'Quarterly: Replace worn belts and rollers',
+            'Semi-annually: Complete hydraulic system service'
+          ],
+          safety: [
+            'Never operate without proper safety barriers',
+            'Ensure personnel clear of moving parts before operation',
+            'Use proper fall protection when working at height',
+            'Maintain safe distance from aircraft surfaces'
+          ]
+        },
+        'DEICE TRUCK FRONT 7485': {
+          type: 'Deicing Equipment',
+          operation: [
+            'Check deicing fluid levels and concentration',
+            'Test spray system pressure and pattern',
+            'Verify boom operation and positioning controls',
+            'Ensure proper communication systems with flight crew',
+            'Monitor weather conditions and fluid effectiveness'
+          ],
+          maintenance: [
+            'Daily: Check fluid levels, inspect spray nozzles',
+            'Weekly: Test boom hydraulics and controls',
+            'Monthly: Flush and clean fluid systems',
+            'Seasonally: Complete pump and filter maintenance',
+            'Annually: Pressure test all hydraulic systems'
+          ],
+          safety: [
+            'Use appropriate personal protective equipment',
+            'Maintain safe working distance from aircraft engines',
+            'Monitor wind conditions before deicing operations',
+            'Follow environmental protocols for fluid disposal'
+          ]
+        },
+        'DEICE TRUCK REAR 7465': {
+          type: 'Deicing Equipment',
+          operation: [
+            'Coordinate with front deicing unit for comprehensive coverage',
+            'Check fluid concentration and application rate',
+            'Monitor surface temperature and holdover times',
+            'Verify proper boom articulation and control',
+            'Maintain communication with aircraft crew and ground control'
+          ],
+          maintenance: [
+            'Daily: Inspect fluid lines and spray systems',
+            'Weekly: Check boom positioning mechanisms',
+            'Monthly: Service pumps and pressure systems',
+            'Seasonal: Complete system winterization or preparation',
+            'Annually: Calibrate spray systems and controls'
+          ],
+          safety: [
+            'Follow two-person operation procedures',
+            'Ensure proper deicing fluid handling and storage',
+            'Maintain awareness of aircraft movement and engine status',
+            'Use proper fall protection and safety harnesses'
+          ]
+        }
+      },
+      'YFC': {
+        'AIRCRAFT TUG': {
+          type: 'Aircraft Ground Support',
+          operation: [
+            'Inspect tow bar and aircraft connection points',
+            'Check tire condition and proper inflation',
+            'Test steering and braking systems before use',
+            'Verify radio communication with tower/ground control',
+            'Ensure proper weight distribution and balance'
+          ],
+          maintenance: [
+            'Daily: Check fluid levels, tire condition, lights',
+            'Weekly: Inspect tow bars and safety equipment',
+            'Monthly: Service transmission and hydraulic systems',
+            'Quarterly: Complete brake system inspection',
+            'Annually: Comprehensive safety and performance inspection'
+          ],
+          safety: [
+            'Always use proper aircraft-specific tow bars',
+            'Maintain visual contact with aircraft during movement',
+            'Follow designated taxiway routes and speed limits',
+            'Use wing walkers when required for aircraft clearance'
+          ]
+        },
+        'BAGGAGE CART': {
+          type: 'Cargo Handling Equipment',
+          operation: [
+            'Inspect cart structure and wheels for damage',
+            'Check coupling mechanisms and safety chains',
+            'Verify proper load distribution and securing',
+            'Test braking system and emergency stops',
+            'Ensure proper visibility and lighting'
+          ],
+          maintenance: [
+            'Daily: Lubricate wheels and moving parts',
+            'Weekly: Inspect coupling systems and safety equipment',
+            'Monthly: Check structural integrity and welds',
+            'Quarterly: Replace worn wheels and bearings',
+            'Annually: Complete structural and safety inspection'
+          ],
+          safety: [
+            'Never exceed maximum load capacity',
+            'Secure all baggage and cargo properly',
+            'Maintain safe following distances',
+            'Use proper lifting techniques when loading/unloading'
+          ]
+        }
+      },
+      'YTS': {
+        'GROUND POWER UNIT': {
+          type: 'Electrical Support Equipment',
+          operation: [
+            'Check input voltage and frequency settings',
+            'Inspect all power cables for damage or wear',
+            'Verify proper operation of cooling systems',
+            'Test emergency shutdown procedures',
+            'Monitor load distribution and power quality'
+          ],
+          maintenance: [
+            'Daily: Check fluid levels and inspect for leaks',
+            'Weekly: Clean cooling system components',
+            'Monthly: Test all safety and protection systems',
+            'Quarterly: Inspect electrical connections and components',
+            'Annually: Complete comprehensive electrical safety inspection'
+          ],
+          safety: [
+            'Ensure proper electrical isolation during maintenance',
+            'Maintain safe working distances from energized equipment',
+            'Use appropriate arc flash protection',
+            'Follow manufacturer lockout/tagout procedures'
+          ]
+        },
+        'AIRCRAFT STAIRS': {
+          type: 'Passenger Service Equipment',
+          operation: [
+            'Position stairs at proper angle and distance from aircraft',
+            'Test all safety systems and emergency controls',
+            'Verify wheel chocks are properly placed',
+            'Check handrails and non-slip surfaces',
+            'Ensure proper electrical grounding if equipped'
+          ],
+          maintenance: [
+            'Daily: Inspect safety systems and structural components',
+            'Weekly: Lubricate moving parts and test controls',
+            'Monthly: Check hydraulic systems and fluid levels',
+            'Quarterly: Inspect electrical systems and grounding',
+            'Annually: Complete comprehensive structural inspection'
+          ],
+          safety: [
+            'Always use wheel chocks and safety chains',
+            'Never exceed weight capacity limitations',
+            'Ensure personnel use handrails at all times',
+            'Maintain safe clearance from aircraft surfaces'
+          ]
+        }
+      },
+      'YQG': {
+        'FUEL TRUCK': {
+          type: 'Aircraft Refueling Equipment',
+          operation: [
+            'Check fuel quality and contamination levels',
+            'Verify proper grounding and bonding procedures',
+            'Test all safety systems and emergency shutoffs',
+            'Ensure fuel hose and nozzle integrity',
+            'Monitor fuel flow rates and pressure'
+          ],
+          maintenance: [
+            'Daily: Check for leaks, inspect hoses and fittings',
+            'Weekly: Test safety systems and emergency equipment',
+            'Monthly: Calibrate fuel quantity systems',
+            'Quarterly: Complete tank and pump inspection',
+            'Annually: Professional system certification and testing'
+          ],
+          safety: [
+            'Always establish proper grounding before fuel transfer',
+            'Keep fire extinguisher readily available',
+            'No smoking or open flames within 50 feet',
+            'Follow proper fuel handling and spill response procedures'
+          ]
+        },
+        'LAVATORY SERVICE TRUCK': {
+          type: 'Aircraft Service Equipment',
+          operation: [
+            'Check waste tank capacity and service connections',
+            'Verify proper operation of vacuum and pump systems',
+            'Test all hose connections and fittings',
+            'Ensure proper sanitization chemicals available',
+            'Check waste level indicators and alarms'
+          ],
+          maintenance: [
+            'Daily: Clean and sanitize all service equipment',
+            'Weekly: Inspect vacuum systems and filters',
+            'Monthly: Service pumps and mechanical components',
+            'Quarterly: Complete tank and plumbing inspection',
+            'Annually: Professional system overhaul and certification'
+          ],
+          safety: [
+            'Use appropriate personal protective equipment',
+            'Follow proper waste disposal procedures',
+            'Ensure adequate ventilation during service',
+            'Maintain strict hygiene and sanitation protocols'
+          ]
+        }
+      },
+      'YSJ': {
+        'AIRCRAFT TUG': {
+          type: 'Aircraft Ground Support',
+          operation: [
+            'Inspect tow bar and aircraft connection points',
+            'Check tire condition and proper inflation',
+            'Test steering and braking systems before use',
+            'Verify radio communication with tower/ground control',
+            'Ensure proper weight distribution and balance'
+          ],
+          maintenance: [
+            'Daily: Check fluid levels, tire condition, lights',
+            'Weekly: Inspect tow bars and safety equipment',
+            'Monthly: Service transmission and hydraulic systems',
+            'Quarterly: Complete brake system inspection',
+            'Annually: Comprehensive safety and performance inspection'
+          ],
+          safety: [
+            'Always use proper aircraft-specific tow bars',
+            'Maintain visual contact with aircraft during movement',
+            'Follow designated taxiway routes and speed limits',
+            'Use wing walkers when required for aircraft clearance'
+          ]
+        },
+        'CONVEYOR BELT LOADER': {
+          type: 'Cargo Handling Equipment',
+          operation: [
+            'Inspect conveyor belt for damage or foreign objects',
+            'Test emergency stop functions and safety systems',
+            'Verify proper positioning relative to aircraft cargo door',
+            'Check hydraulic system pressure and fluid levels',
+            'Ensure proper communication with ground crew'
+          ],
+          maintenance: [
+            'Daily: Lubricate moving parts, check belt tension',
+            'Weekly: Inspect hydraulic lines and connections',
+            'Monthly: Clean and adjust conveyor system',
+            'Quarterly: Replace worn belts and rollers',
+            'Semi-annually: Complete hydraulic system service'
+          ],
+          safety: [
+            'Never operate without proper safety barriers',
+            'Ensure personnel clear of moving parts before operation',
+            'Use proper fall protection when working at height',
+            'Maintain safe distance from aircraft surfaces'
+          ]
+        }
+      },
+      'GENERAL': {
+        'AIRCRAFT TUGS': {
+          type: 'Aircraft Ground Support',
+          operation: [
+            'Inspect tow bar and aircraft connection points',
+            'Check tire condition and proper inflation',
+            'Test steering and braking systems before use',
+            'Verify radio communication with tower/ground control',
+            'Ensure proper weight distribution and balance'
+          ],
+          maintenance: [
+            'Daily: Check fluid levels, tire condition, lights',
+            'Weekly: Inspect tow bars and safety equipment',
+            'Monthly: Service transmission and hydraulic systems',
+            'Quarterly: Complete brake system inspection',
+            'Annually: Comprehensive safety and performance inspection'
+          ],
+          safety: [
+            'Always use proper aircraft-specific tow bars',
+            'Maintain visual contact with aircraft during movement',
+            'Follow designated taxiway routes and speed limits',
+            'Use wing walkers when required for aircraft clearance'
+          ]
+        },
+        'BAGGAGE CARTS': {
+          type: 'Cargo Handling Equipment',
+          operation: [
+            'Inspect cart structure and wheels for damage',
+            'Check coupling mechanisms and safety chains',
+            'Verify proper load distribution and securing',
+            'Test braking system and emergency stops',
+            'Ensure proper visibility and lighting'
+          ],
+          maintenance: [
+            'Daily: Lubricate wheels and moving parts',
+            'Weekly: Inspect coupling systems and safety equipment',
+            'Monthly: Check structural integrity and welds',
+            'Quarterly: Replace worn wheels and bearings',
+            'Annually: Complete structural and safety inspection'
+          ],
+          safety: [
+            'Never exceed maximum load capacity',
+            'Secure all baggage and cargo properly',
+            'Maintain safe following distances',
+            'Use proper lifting techniques when loading/unloading'
+          ]
+        },
+        'AIRCRAFT STAIRS': {
+          type: 'Passenger Service Equipment',
+          operation: [
+            'Position stairs at proper angle and distance from aircraft',
+            'Test all safety systems and emergency controls',
+            'Verify wheel chocks are properly placed',
+            'Check handrails and non-slip surfaces',
+            'Ensure proper electrical grounding if equipped'
+          ],
+          maintenance: [
+            'Daily: Inspect safety systems and structural components',
+            'Weekly: Lubricate moving parts and test controls',
+            'Monthly: Check hydraulic systems and fluid levels',
+            'Quarterly: Inspect electrical systems and grounding',
+            'Annually: Complete comprehensive structural inspection'
+          ],
+          safety: [
+            'Always use wheel chocks and safety chains',
+            'Never exceed weight capacity limitations',
+            'Ensure personnel use handrails at all times',
+            'Maintain safe clearance from aircraft surfaces'
+          ]
+        }
+      }
+    };
+
+    // Initialize page
+    document.addEventListener('DOMContentLoaded', function() {
+      showNoGuidelines();
+      setupScrollHandler();
+    });
+
+    function loadGuidelines() {
+      const station = document.getElementById('stationSelect').value;
+      const container = document.getElementById('guidelinesContainer');
+      const noGuidelines = document.getElementById('noGuidelines');
+      const title = document.getElementById('guidelinesTitle');
+      const equipmentList = document.getElementById('equipmentList');
+
+      if (!station) {
+        showNoGuidelines();
+        return;
+      }
+
+      // Hide no guidelines message and show container
+      noGuidelines.style.display = 'none';
+      container.style.display = 'block';
+
+      // Update title
+      title.textContent = `${station} Equipment Guidelines`;
+
+      // Clear previous content
+      equipmentList.innerHTML = '';
+
+      // Get equipment data for selected station
+      const stationData = equipmentData[station];
+      if (!stationData) {
+        equipmentList.innerHTML = '<div class="no-guidelines"><p>No guidelines available for this station.</p></div>';
+        return;
+      }
+
+      // Generate equipment items
+      Object.keys(stationData).forEach(equipmentName => {
+        const equipment = stationData[equipmentName];
+        const equipmentDiv = createEquipmentItem(equipmentName, equipment);
+        equipmentList.appendChild(equipmentDiv);
+      });
+    }
+
+    function createEquipmentItem(name, data) {
+      const itemDiv = document.createElement('div');
+      itemDiv.className = 'equipment-item';
+
+      const header = document.createElement('div');
+      header.className = 'equipment-header';
+      header.onclick = () => toggleEquipment(header);
+      
+      header.innerHTML = `
+        <span><strong>${name}</strong> - ${data.type}</span>
+        <span class="expand-icon">▼</span>
+      `;
+
+      const content = document.createElement('div');
+      content.className = 'equipment-content';
+      
+      const details = document.createElement('div');
+      details.className = 'equipment-details';
+      
+      details.innerHTML = `
+        <h4>Operation Procedures</h4>
+        <ul>
+          ${data.operation.map(item => `<li>${item}</li>`).join('')}
+        </ul>
+        
+        <h4>Maintenance Requirements</h4>
+        <ul>
+          ${data.maintenance.map(item => `<li>${item}</li>`).join('')}
+        </ul>
+        
+        <h4>Safety Guidelines</h4>
+        <ul>
+          ${data.safety.map(item => `<li>${item}</li>`).join('')}
+        </ul>
+        
+        <div class="warning critical">
+          <strong>⚠️ CRITICAL:</strong> Any deficiencies must be reported immediately through Equipment Deficiency Reports (EDR). Do not operate equipment with known defects.
+        </div>
+        
+        <div class="warning">
+          <strong>📋 NOTE:</strong> All equipment must pass daily safety inspections before use. Reference manufacturer manuals for detailed specifications.
+        </div>
+      `;
+
+      content.appendChild(details);
+      itemDiv.appendChild(header);
+      itemDiv.appendChild(content);
+
+      return itemDiv;
+    }
+
+    function toggleEquipment(header) {
+      const content = header.nextElementSibling;
+      const isActive = header.classList.contains('active');
+
+      // Close all other open items
+      document.querySelectorAll('.equipment-header.active').forEach(activeHeader => {
+        if (activeHeader !== header) {
+          activeHeader.classList.remove('active');
+          activeHeader.nextElementSibling.classList.remove('active');
+        }
+      });
+
+      // Toggle current item
+      if (isActive) {
+        header.classList.remove('active');
+        content.classList.remove('active');
+      } else {
+        header.classList.add('active');
+        content.classList.add('active');
+      }
+    }
+
+    function showNoGuidelines() {
+      document.getElementById('guidelinesContainer').style.display = 'none';
+      document.getElementById('noGuidelines').style.display = 'block';
+    }
+
+    function returnToHome() {
+      window.location.href = 'index.html?return=true';
+    }
+
+    function scrollToTop() {
+      window.scrollTo({
+        top: 0,
+        behavior: 'smooth'
+      });
+    }
+
+    function setupScrollHandler() {
+      const backToTopBtn = document.getElementById('backToTop');
+      
+      window.addEventListener('scroll', function() {
+        if (window.pageYOffset > 300) {
+          backToTopBtn.classList.add('visible');
+        } else {
+          backToTopBtn.classList.remove('visible');
+        }
+      });
+    }
+  </script>
+</body>
+</html>

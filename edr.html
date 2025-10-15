@@ -1,0 +1,822 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Equipment Deficiency Report (EDR) - RAMPSECURE</title>
+  
+  <style>
+    :root{
+      --red:#C62828;
+      --red-dark:#A31F1F;
+      --black:#0E0E0E;
+      --white:#FFFFFF;
+      --gray:#f5f5f5;
+      --light-gray:#fafafa;
+      --green:#4CAF50;
+      --orange:#FF9800;
+      --blue:#2196F3;
+      --yellow:#FFC107;
+    }
+    
+    *{box-sizing:border-box}
+    html,body{height:100%;margin:0;padding:0}
+    body{
+      font-family: Arial, Helvetica, sans-serif;
+      background:var(--red);
+      color:var(--black);
+      padding:20px;
+    }
+    
+    .container{
+      max-width:900px;
+      margin:0 auto;
+      background:var(--white);
+      border-radius:16px;
+      box-shadow:0 10px 30px rgba(0,0,0,0.2);
+      overflow:hidden;
+    }
+    
+    .header{
+      background:linear-gradient(135deg, var(--red) 0%, var(--red-dark) 100%);
+      color:var(--white);
+      padding:25px 30px;
+      position:relative;
+    }
+    
+    .header h1{
+      margin:0;
+      font-size:32px;
+      font-weight:900;
+    }
+    
+    .header p{
+      margin:8px 0 0;
+      opacity:0.9;
+      font-size:16px;
+    }
+    
+    .form-content{
+      padding:30px;
+    }
+    
+    .form-section{
+      margin-bottom:25px;
+      border:2px solid #e0e0e0;
+      border-radius:12px;
+      overflow:hidden;
+    }
+    
+    .section-header{
+      background:var(--light-gray);
+      padding:15px 20px;
+      border-bottom:2px solid #e0e0e0;
+      font-weight:700;
+      font-size:16px;
+      color:var(--black);
+      display:flex;
+      align-items:center;
+      gap:10px;
+    }
+    
+    .section-content{
+      padding:20px;
+    }
+    
+    .form-grid{
+      display:grid;
+      grid-template-columns:1fr 1fr 1fr;
+      gap:20px;
+      margin-bottom:20px;
+    }
+    
+    .form-grid-2{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:20px;
+      margin-bottom:20px;
+    }
+    
+    .form-group{
+      display:flex;
+      flex-direction:column;
+    }
+    
+    .form-group label{
+      font-weight:600;
+      margin-bottom:8px;
+      color:var(--black);
+      display:flex;
+      align-items:center;
+      gap:5px;
+    }
+    
+    .required{
+      color:var(--red);
+    }
+    
+    .form-group input, .form-group select, .form-group textarea{
+      padding:12px;
+      border:2px solid #ddd;
+      border-radius:8px;
+      font-size:14px;
+      transition:all 0.2s ease;
+    }
+    
+    .form-group input:focus, .form-group select:focus, .form-group textarea:focus{
+      outline:none;
+      border-color:var(--red);
+      box-shadow:0 0 0 3px rgba(198, 40, 40, 0.1);
+    }
+    
+    .severity-selector{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:15px;
+      margin-bottom:20px;
+    }
+    
+    .severity-card{
+      border:3px solid #ddd;
+      border-radius:12px;
+      padding:20px;
+      cursor:pointer;
+      transition:all 0.2s ease;
+      text-align:center;
+    }
+    
+    .severity-card:hover{
+      transform:translateY(-2px);
+      box-shadow:0 5px 15px rgba(0,0,0,0.1);
+    }
+    
+    .severity-card.selected{
+      border-color:var(--red);
+      background:rgba(198, 40, 40, 0.05);
+    }
+    
+    .severity-card.minor{
+      border-color:var(--yellow);
+    }
+    
+    .severity-card.minor.selected{
+      border-color:var(--yellow);
+      background:rgba(255, 193, 7, 0.1);
+    }
+    
+    .severity-card.major{
+      border-color:var(--red);
+    }
+    
+    .severity-card.major.selected{
+      border-color:var(--red);
+      background:rgba(198, 40, 40, 0.1);
+    }
+    
+    .severity-title{
+      font-weight:700;
+      font-size:18px;
+      margin-bottom:8px;
+    }
+    
+    .severity-desc{
+      font-size:14px;
+      color:#666;
+    }
+    
+    .image-upload{
+      border:2px dashed #ddd;
+      border-radius:12px;
+      padding:40px 20px;
+      text-align:center;
+      transition:all 0.2s ease;
+      cursor:pointer;
+    }
+    
+    .image-upload:hover{
+      border-color:var(--red);
+      background:rgba(198, 40, 40, 0.02);
+    }
+    
+    .image-upload.dragover{
+      border-color:var(--red);
+      background:rgba(198, 40, 40, 0.05);
+    }
+    
+    .upload-icon{
+      font-size:48px;
+      color:#ccc;
+      margin-bottom:15px;
+    }
+    
+    .preview-container{
+      display:grid;
+      grid-template-columns:repeat(auto-fill, minmax(150px, 1fr));
+      gap:15px;
+      margin-top:20px;
+    }
+    
+    .image-preview{
+      position:relative;
+      border-radius:8px;
+      overflow:hidden;
+      border:2px solid #ddd;
+    }
+    
+    .image-preview img{
+      width:100%;
+      height:120px;
+      object-fit:cover;
+    }
+    
+    .remove-image{
+      position:absolute;
+      top:5px;
+      right:5px;
+      background:var(--red);
+      color:white;
+      border:none;
+      border-radius:50%;
+      width:24px;
+      height:24px;
+      cursor:pointer;
+      font-size:12px;
+    }
+    
+    .priority-indicator{
+      display:inline-block;
+      padding:4px 8px;
+      border-radius:20px;
+      font-size:12px;
+      font-weight:600;
+      margin-left:10px;
+    }
+    
+    .priority-high{
+      background:var(--red);
+      color:white;
+    }
+    
+    .priority-medium{
+      background:var(--yellow);
+      color:black;
+    }
+    
+    .action-buttons{
+      display:flex;
+      gap:15px;
+      justify-content:center;
+      margin-top:30px;
+      padding-top:20px;
+      border-top:2px solid #e0e0e0;
+    }
+    
+    .btn{
+      padding:15px 30px;
+      border:none;
+      border-radius:8px;
+      font-weight:700;
+      font-size:16px;
+      cursor:pointer;
+      transition:all 0.2s ease;
+    }
+    
+    .btn-primary{
+      background:var(--red);
+      color:white;
+    }
+    
+    .btn-primary:hover{
+      background:var(--red-dark);
+      transform:translateY(-2px);
+    }
+    
+    .btn-secondary{
+      background:#666;
+      color:white;
+    }
+    
+    .btn-secondary:hover{
+      background:#555;
+      transform:translateY(-2px);
+    }
+    
+    .warning-notice{
+      background:var(--red-dark);
+      color:white;
+      padding:15px 20px;
+      margin:20px 0;
+      border-radius:8px;
+      font-weight:600;
+      text-align:center;
+    }
+    
+    @media (max-width: 768px) {
+      .form-grid{
+        grid-template-columns:1fr;
+      }
+      
+      .form-grid-2{
+        grid-template-columns:1fr;
+      }
+      
+      .severity-selector{
+        grid-template-columns:1fr;
+      }
+      
+      .action-buttons{
+        flex-direction:column;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>Equipment Deficiency Report (EDR)</h1>
+      <p>Report equipment issues and deficiencies</p>
+      <div style="position:absolute; top:25px; right:30px; font-size:14px; text-align:right;">
+        <span id="currentDateTime"></span>
+        <button class="home-btn" style="margin-top:10px;background:var(--white);color:var(--red);border:none;padding:10px 18px;border-radius:8px;font-weight:700;cursor:pointer;" onclick="window.location.href='index.html?return=true'">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" style="vertical-align:middle;margin-right:6px;"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
+          HOME
+        </button>
+      </div>
+    </div>
+    
+    <div class="form-content">
+      <!-- Report Details Section -->
+      <div class="form-section">
+        <div class="section-header">
+          📋 Report Details
+        </div>
+        <div class="section-content">
+          <div class="form-grid">
+            <div class="form-group">
+              <label>Station <span class="required">*</span></label>
+              <select id="station" required>
+                <option value="">Select Station</option>
+                <option value="YQT">Thunder Bay (YQT)</option>
+                <option value="YBR">Brandon (YBR)</option>
+                <option value="YFC">Fredericton (YFC)</option>
+                <option value="YTS">Timmins (YTS)</option>
+                <option value="YQG">Windsor (YQG)</option>
+                <option value="YSJ">Saint John (YSJ)</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Report Date <span class="required">*</span></label>
+              <input type="date" id="reportDate" required>
+            </div>
+            <div class="form-group">
+              <label>Report Time <span class="required">*</span></label>
+              <input type="time" id="reportTime" required>
+            </div>
+          </div>
+          <div class="form-grid">
+            <div class="form-group">
+              <label>Reported By <span class="required">*</span></label>
+              <input type="text" id="reportedBy" placeholder="Your name" required>
+            </div>
+            <div class="form-group">
+              <label>Equipment Name <span class="required">*</span></label>
+              <input type="text" id="equipmentName" placeholder="e.g., KUBOTA, Belt Loader" required>
+            </div>
+            <div class="form-group">
+              <label>Equipment ID Number <span class="required">*</span></label>
+              <input type="text" id="equipmentId" placeholder="e.g., 7499, 7372" required>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Defect Classification Section -->
+      <div class="form-section">
+        <div class="section-header">
+          ⚠️ Defect Classification
+        </div>
+        <div class="section-content">
+          <div class="severity-selector">
+            <div class="severity-card minor" onclick="selectSeverity('minor')">
+              <div class="severity-title" style="color: #FF9800;">MINOR DEFECT</div>
+              <div class="severity-desc">Equipment is safe to operate, except this MINOR problem</div>
+              <div class="priority-indicator priority-medium">Medium Priority</div>
+            </div>
+            <div class="severity-card major" onclick="selectSeverity('major')">
+              <div class="severity-title" style="color: #C62828;">MAJOR DEFECT</div>
+              <div class="severity-desc">Equipment is not operating, or is UNSAFE to operate</div>
+              <div class="priority-indicator priority-high">High Priority</div>
+            </div>
+          </div>
+          
+          <div class="form-group">
+            <label>Describe Defect or Problem <span class="required">*</span></label>
+            <textarea id="defectDescription" rows="4" placeholder="Provide detailed description of the issue, including when it was first noticed, any unusual sounds, smells, or behaviors..." required></textarea>
+          </div>
+
+          <div class="form-group">
+            <label>Location of Defect</label>
+            <input type="text" id="defectLocation" placeholder="e.g., Left front tire, Hydraulic system, Engine compartment">
+          </div>
+
+          <div class="form-grid-2">
+            <div class="form-group">
+              <label>Suspected Cause</label>
+              <select id="suspectedCause">
+                <option value="">Select if known</option>
+                <option value="wear">Normal Wear & Tear</option>
+                <option value="damage">Physical Damage</option>
+                <option value="leak">Fluid Leak</option>
+                <option value="electrical">Electrical Issue</option>
+                <option value="mechanical">Mechanical Failure</option>
+                <option value="weather">Weather Related</option>
+                <option value="operator">Operator Error</option>
+                <option value="maintenance">Maintenance Related</option>
+                <option value="unknown">Unknown</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Immediate Safety Risk</label>
+              <select id="safetyRisk">
+                <option value="none">No Safety Risk</option>
+                <option value="low">Low Risk</option>
+                <option value="medium">Medium Risk</option>
+                <option value="high">High Risk - Immediate Action Required</option>
+              </select>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Equipment Removal Section (for Major Defects) -->
+      <div class="form-section" id="removalSection" style="display:none;">
+        <div class="section-header">
+          🏷️ Equipment Removal from Service
+        </div>
+        <div class="section-content">
+          <div class="warning-notice">
+            For a MAJOR Defect, the equipment MUST be removed from service immediately, tagged OFFLINE and management and/or the GSE Technician must be notified.
+          </div>
+          
+          <div class="form-grid">
+            <div class="form-group">
+              <label>Equipment Tagged "DO NOT OPERATE" <span class="required">*</span></label>
+              <select id="equipmentTagged" required>
+                <option value="">Select</option>
+                <option value="yes">Yes - Equipment Tagged</option>
+                <option value="no">No - Not Yet Tagged</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Removal Date</label>
+              <input type="date" id="removalDate">
+            </div>
+            <div class="form-group">
+              <label>Removal Time</label>
+              <input type="time" id="removalTime">
+            </div>
+          </div>
+          
+          <div class="form-group">
+            <label>Removed from Service by</label>
+            <input type="text" id="removedBy" placeholder="Name of person who removed equipment">
+          </div>
+
+          <div class="form-grid-2">
+            <div class="form-group">
+              <label>Management Notified</label>
+              <select id="managementNotified">
+                <option value="no">Not Yet Notified</option>
+                <option value="yes">Yes - Management Notified</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>GSE Technician Notified</label>
+              <select id="technicianNotified">
+                <option value="no">Not Yet Notified</option>
+                <option value="yes">Yes - Technician Notified</option>
+              </select>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Image Upload Section -->
+      <div class="form-section">
+        <div class="section-header">
+          📸 Upload Images
+        </div>
+        <div class="section-content">
+          <div class="image-upload" onclick="document.getElementById('imageInput').click()">
+            <div class="upload-icon">📷</div>
+            <p><strong>Click to upload images</strong> or drag and drop</p>
+            <p style="font-size:12px; color:#666;">JPG, PNG, HEIC files up to 10MB each</p>
+          </div>
+          <input type="file" id="imageInput" multiple accept="image/*" style="display:none" onchange="handleImageUpload(event)">
+          <div id="imagePreview" class="preview-container"></div>
+        </div>
+      </div>
+
+      <!-- Additional Information -->
+      <div class="form-section">
+        <div class="section-header">
+          📝 Additional Information
+        </div>
+        <div class="section-content">
+          <div class="form-grid-2">
+            <div class="form-group">
+              <label>Operating Hours (if known)</label>
+              <input type="number" id="operatingHours" placeholder="Total hours">
+            </div>
+            <div class="form-group">
+              <label>Last Maintenance Date</label>
+              <input type="date" id="lastMaintenance">
+            </div>
+          </div>
+          
+          <div class="form-group">
+            <label>Additional Comments</label>
+            <textarea id="additionalComments" rows="3" placeholder="Any additional information that might be helpful for repair..."></textarea>
+          </div>
+
+          <div class="form-group">
+            <label>Temporary Fix Applied</label>
+            <textarea id="temporaryFix" rows="2" placeholder="If any temporary measures were taken, describe them here..."></textarea>
+          </div>
+        </div>
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="action-buttons">
+        <button class="btn btn-primary" onclick="submitEDR()">Submit EDR Report</button>
+        <button class="btn btn-secondary" onclick="saveDraft()">Save Draft</button>
+        <button class="btn btn-secondary" onclick="goBack()">Back to Main</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let selectedSeverity = '';
+    let uploadedImages = [];
+
+    // Initialize the form
+    document.addEventListener('DOMContentLoaded', function() {
+      const now = new Date();
+      document.getElementById('currentDateTime').textContent = now.toLocaleString();
+      document.getElementById('reportDate').value = now.toISOString().split('T')[0];
+      document.getElementById('reportTime').value = now.toTimeString().slice(0, 5);
+    });
+
+    function selectSeverity(severity) {
+      selectedSeverity = severity;
+      
+      // Update UI
+      document.querySelectorAll('.severity-card').forEach(card => card.classList.remove('selected'));
+      document.querySelector(`.severity-card.${severity}`).classList.add('selected');
+      
+      // Show/hide removal section for major defects
+      const removalSection = document.getElementById('removalSection');
+      if (severity === 'major') {
+        removalSection.style.display = 'block';
+        document.getElementById('equipmentTagged').setAttribute('required', '');
+      } else {
+        removalSection.style.display = 'none';
+        document.getElementById('equipmentTagged').removeAttribute('required');
+      }
+    }
+
+    function handleImageUpload(event) {
+      const files = event.target.files;
+      const previewContainer = document.getElementById('imagePreview');
+      
+      Array.from(files).forEach(file => {
+        if (file.size > 10 * 1024 * 1024) {
+          alert(`File ${file.name} is too large. Please use files under 10MB.`);
+          return;
+        }
+        
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          const imageData = {
+            name: file.name,
+            data: e.target.result,
+            size: file.size
+          };
+          
+          uploadedImages.push(imageData);
+          
+          const previewDiv = document.createElement('div');
+          previewDiv.className = 'image-preview';
+          previewDiv.innerHTML = `
+            <img src="${e.target.result}" alt="${file.name}">
+            <button class="remove-image" onclick="removeImage(${uploadedImages.length - 1})">×</button>
+          `;
+          
+          previewContainer.appendChild(previewDiv);
+        };
+        
+        reader.readAsDataURL(file);
+      });
+    }
+
+    function removeImage(index) {
+      uploadedImages.splice(index, 1);
+      const previewContainer = document.getElementById('imagePreview');
+      previewContainer.children[index].remove();
+    }
+
+    function submitEDR() {
+      // Validate required fields
+      const required = ['station', 'reportDate', 'reportTime', 'reportedBy', 'equipmentName', 'equipmentId', 'defectDescription'];
+      const missing = [];
+      
+      required.forEach(field => {
+        if (!document.getElementById(field).value) {
+          missing.push(field);
+        }
+      });
+
+      if (!selectedSeverity) {
+        missing.push('severity');
+      }
+
+      if (selectedSeverity === 'major' && !document.getElementById('equipmentTagged').value) {
+        missing.push('equipmentTagged');
+      }
+
+      if (missing.length > 0) {
+        alert('Please fill in all required fields: ' + missing.join(', '));
+        return;
+      }
+
+      // Collect form data
+      const formData = {
+        station: document.getElementById('station').value,
+        reportDate: document.getElementById('reportDate').value,
+        reportTime: document.getElementById('reportTime').value,
+        reportedBy: document.getElementById('reportedBy').value,
+        equipmentName: document.getElementById('equipmentName').value,
+        equipmentId: document.getElementById('equipmentId').value,
+        severity: selectedSeverity,
+        defectDescription: document.getElementById('defectDescription').value,
+        defectLocation: document.getElementById('defectLocation').value,
+        suspectedCause: document.getElementById('suspectedCause').value,
+        safetyRisk: document.getElementById('safetyRisk').value,
+        equipmentTagged: document.getElementById('equipmentTagged').value,
+        removalDate: document.getElementById('removalDate').value,
+        removalTime: document.getElementById('removalTime').value,
+        removedBy: document.getElementById('removedBy').value,
+        managementNotified: document.getElementById('managementNotified').value,
+        technicianNotified: document.getElementById('technicianNotified').value,
+        operatingHours: document.getElementById('operatingHours').value,
+        lastMaintenance: document.getElementById('lastMaintenance').value,
+        additionalComments: document.getElementById('additionalComments').value,
+        temporaryFix: document.getElementById('temporaryFix').value,
+        images: uploadedImages,
+        timestamp: new Date().toISOString()
+      };
+
+      // Send email with form data
+      sendEDREmail(formData);
+      
+      const reportId = 'EDR-' + Date.now();
+      alert(`✅ Equipment Deficiency Report submitted successfully!\n\nReport ID: ${reportId}\nSeverity: ${selectedSeverity.toUpperCase()}\nEquipment: ${formData.equipmentName} (${formData.equipmentId})\n\nYour email client will now open to send the report.`);
+    }
+
+    function sendEDREmail(formData) {
+      // Base recipients for all stations
+      let recipients = [
+        'sean.davies@maintair.com',
+        'john.marshall@maintair.com',
+        'john.currie@maintair.com',
+        'eric.cline@maintair.com'
+      ];
+
+      // Add YBR-specific recipients
+      if (formData.station === 'YBR') {
+        recipients.push(
+          'joseph.hunter@maintair.com',
+          'sergio.martinez@maintair.com',
+          'emmanuel.afolabi@maintair.com'
+        );
+      }
+
+      // Create email subject
+      const subject = `[${formData.severity.toUpperCase()} DEFECT] EDR - ${formData.equipmentName} (${formData.equipmentId}) - ${formData.station}`;
+
+      // Create email body
+      let emailBody = `EQUIPMENT DEFICIENCY REPORT (EDR)
+================================================
+
+REPORT DETAILS:
+- Station: ${formData.station}
+- Report Date: ${formData.reportDate}
+- Report Time: ${formData.reportTime}
+- Reported By: ${formData.reportedBy}
+
+EQUIPMENT INFORMATION:
+- Equipment Name: ${formData.equipmentName}
+- Equipment ID: ${formData.equipmentId}
+- Operating Hours: ${formData.operatingHours || 'Not specified'}
+- Last Maintenance: ${formData.lastMaintenance || 'Not specified'}
+
+DEFECT CLASSIFICATION:
+- Severity: ${formData.severity.toUpperCase()} DEFECT
+- Description: ${formData.defectDescription}
+- Location: ${formData.defectLocation || 'Not specified'}
+- Suspected Cause: ${formData.suspectedCause || 'Unknown'}
+- Safety Risk: ${formData.safetyRisk || 'Not assessed'}`;
+
+      if (formData.severity === 'major') {
+        emailBody += `
+
+EQUIPMENT REMOVAL FROM SERVICE:
+- Equipment Tagged "DO NOT OPERATE": ${formData.equipmentTagged || 'Not specified'}
+- Removal Date: ${formData.removalDate || 'Not specified'}
+- Removal Time: ${formData.removalTime || 'Not specified'}
+- Removed by: ${formData.removedBy || 'Not specified'}
+- Management Notified: ${formData.managementNotified || 'Not specified'}
+- GSE Technician Notified: ${formData.technicianNotified || 'Not specified'}`;
+      }
+
+      if (formData.temporaryFix) {
+        emailBody += `
+
+TEMPORARY FIX APPLIED:
+${formData.temporaryFix}`;
+      }
+
+      if (formData.additionalComments) {
+        emailBody += `
+
+ADDITIONAL COMMENTS:
+${formData.additionalComments}`;
+      }
+
+      if (uploadedImages.length > 0) {
+        emailBody += `
+
+IMAGES ATTACHED:
+${uploadedImages.length} image(s) were uploaded with this report.
+Note: Images cannot be automatically attached via email. Please save and attach them manually.`;
+      }
+
+      emailBody += `
+
+Report submitted: ${new Date(formData.timestamp).toLocaleString()}
+
+================================================
+This is an automated Equipment Deficiency Report from RAMPSECURE`;
+
+      // Create mailto link
+      const mailtoLink = `mailto:${recipients.join(',')}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(emailBody)}`;
+      
+      // Open email client
+      window.location.href = mailtoLink;
+    }
+
+    function saveDraft() {
+      const formData = {
+        station: document.getElementById('station').value,
+        reportDate: document.getElementById('reportDate').value,
+        reportTime: document.getElementById('reportTime').value,
+        reportedBy: document.getElementById('reportedBy').value,
+        equipmentName: document.getElementById('equipmentName').value,
+        equipmentId: document.getElementById('equipmentId').value,
+        severity: selectedSeverity,
+        defectDescription: document.getElementById('defectDescription').value,
+        timestamp: new Date().toISOString()
+      };
+
+      alert('💾 EDR draft saved successfully!');
+    }
+
+    function goBack() {
+      if (confirm('Are you sure you want to go back? Any unsaved changes will be lost.')) {
+        window.location.href = 'index.html';
+      }
+    }
+
+    // Drag and drop functionality
+    const uploadArea = document.querySelector('.image-upload');
+    
+    uploadArea.addEventListener('dragover', (e) => {
+      e.preventDefault();
+      uploadArea.classList.add('dragover');
+    });
+
+    uploadArea.addEventListener('dragleave', () => {
+      uploadArea.classList.remove('dragover');
+    });
+
+    uploadArea.addEventListener('drop', (e) => {
+      e.preventDefault();
+      uploadArea.classList.remove('dragover');
+      
+      const files = e.dataTransfer.files;
+      document.getElementById('imageInput').files = files;
+      handleImageUpload({ target: { files } });
+    });
+  </script>
+</body>
+</html>
